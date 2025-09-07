@@ -1,336 +1,213 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cherif Tas - Digital OS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Cherif Tas • AI Architect & Philosopher</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --background-image-url: url('https://images.unsplash.com/photo-1550684376-ef16af215983?q=80&w=2070&auto=format&fit=crop');
-            --window-bg: rgba(10, 20, 35, 0.7);
-            --border-color: rgba(100, 220, 255, 0.3);
-            --header-bg: rgba(40, 50, 65, 0.8);
-            --accent-glow: 0 0 15px rgba(0, 255, 255, 0.3);
+            --sand: #F4E0B9; --terracotta: #E2725B; --indigo: #1D2D50; --gold: #D4AF37; --ink: #3C3633; --parchment: #FCF9F0; --shadow: rgba(29, 45, 80, 0.15);
+            --font-sans: 'IBM Plex Sans', system-ui, sans-serif; --font-serif: 'IBM Plex Serif', Georgia, serif; --font-mono: 'IBM Plex Mono', Monaco, monospace; --font-arabic: 'Noto Kufi Arabic', sans-serif;
+            --layer-1: 0px 2px 4px var(--shadow); --layer-2: 0px 8px 16px var(--shadow); --layer-3: 0px 16px 32px var(--shadow);
+            --transition-snap: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); --transition-fluid: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        body { font-family: 'Space Grotesk', sans-serif; background-color: #0a1423; background-image: var(--background-image-url); background-size: cover; background-position: center; overflow: hidden; color: #e0e0e0; }
-        #desktop { width: 100vw; height: 100vh; position: relative; }
-        .window { position: absolute; background: var(--window-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), var(--accent-glow); display: none; flex-direction: column; resize: both; overflow: hidden; transition: opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease; transform-origin: center; }
-        .window.open { display: flex; animation: open-window 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .window.minimized { display: none; }
-        @keyframes open-window { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .window-header { background-color: var(--header-bg); color: #fff; padding: 8px 12px; cursor: move; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); user-select: none; }
-        .window-title { font-family: 'Roboto Mono', monospace; font-weight: 700; }
-        .window-controls { display: flex; gap: 6px; }
-        .control-btn { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); cursor: pointer; }
-        .close-btn { background-color: #ff5f56; }
-        .minimize-btn { background-color: #ffbd2e; }
-        .maximize-btn { background-color: #27c93f; }
-        .window-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
-        .window-content::-webkit-scrollbar { width: 8px; }
-        .window-content::-webkit-scrollbar-track { background: transparent; }
-        .window-content::-webkit-scrollbar-thumb { background-color: rgba(0, 255, 255, 0.4); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
-        .window-content::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 255, 255, 0.6); }
-        #icon-grid { position: absolute; top: 80px; left: 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .desktop-icon { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; padding: 10px; border-radius: 8px; transition: background-color 0.2s, transform 0.2s; width: 90px; }
-        .desktop-icon:hover { background-color: rgba(100, 220, 255, 0.1); transform: scale(1.05); }
-        .desktop-icon svg { width: 48px; height: 48px; margin-bottom: 8px; filter: drop-shadow(var(--accent-glow)); }
-        .desktop-icon span { font-size: 14px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-        #taskbar { position: absolute; top: 0; left: 0; width: 100%; height: 40px; background: rgba(10, 20, 35, 0.5); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; z-index: 1000; }
-        .taskbar-brand { font-weight: bold; letter-spacing: 1px; flex-shrink: 0; }
-        #taskbar-apps { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; gap: 8px; padding: 0 20px; }
-        .taskbar-app { background: rgba(100, 220, 255, 0.1); border: 1px solid transparent; color: #e0e0e0; padding: 4px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-        .taskbar-app:hover { background: rgba(100, 220, 255, 0.2); border-color: rgba(100, 220, 255, 0.3); }
-        .taskbar-app.minimized { background: rgba(100, 220, 255, 0.05); color: #888; }
-        #clock { font-family: 'Roboto Mono', monospace; font-size: 14px; color: #00ffff; text-shadow: var(--accent-glow); flex-shrink: 0; }
-        #terminal-content { background: #000; color: #0f0; font-family: 'Roboto Mono', monospace; padding: 10px; }
-        #terminal-output p { margin-bottom: 5px; white-space: pre-wrap; }
-        #terminal-output .prompt { color: #00ffff; }
-        #terminal-input { color: #0f0; }
-        @media (max-width: 768px) {
-            #icon-grid { top: 60px; left: 0; right: 0; width: 100%; padding: 10px; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); justify-content: center; gap: 10px; }
-            .window { width: 95vw !important; height: 80vh !important; top: 50px !important; left: 2.5vw !important; resize: none; }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--sand); color: var(--ink); font-family: var(--font-sans); line-height: 1.7; overflow-x: hidden; position: relative; }
+        .library-section { min-height: 100vh; padding: 8rem 5vw; display: flex; flex-direction: column; justify-content: center; position: relative; background: var(--parchment); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(255,255,255,0.8); }
+        .section-title { font-family: var(--font-serif); font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 600; color: var(--indigo); margin-bottom: 1.5rem; position: relative; line-height: 1.1; letter-spacing: -0.03em; }
+        .section-subtitle { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 400; color: var(--terracotta); max-width: 60ch; margin-bottom: 3rem; }
+        h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 600; line-height: 1.2; }
+        p, li { font-family: var(--font-sans); font-weight: 400; }
+        code, kbd, pre { font-family: var(--font-mono); }
+        .arabic { font-family: var(--font-arabic); font-size: 1.3em; color: var(--indigo); }
+        #hero { background: linear-gradient(135deg, var(--sand) 0%, var(--parchment) 100%); display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; padding-top: 4rem; padding-bottom: 4rem; }
+        .hero-text { display: flex; flex-direction: column; justify-content: center; }
+        .hero-name { font-family: var(--font-serif); font-size: clamp(3rem, 8vw, 6rem); font-weight: 700; color: var(--indigo); line-height: 0.95; margin-bottom: 1rem; text-shadow: 2px 2px 0 rgba(212, 175, 55, 0.1); }
+        .hero-tagline { font-family: var(--font-sans); font-size: 1.3rem; font-weight: 500; color: var(--terracotta); max-width: 50ch; margin-bottom: 2rem; position: relative; padding-left: 2rem; }
+        .hero-tagline::before { content: ""; position: absolute; left: 0; top: 50%; width: 30px; height: 3px; background: var(--gold); transform: translateY(-50%); }
+        .hero-image-container { position: relative; perspective: 1000px; transform: rotateY(-5deg); filter: drop-shadow(var(--layer-2)); }
+        .hero-image { width: 100%; max-width: 400px; aspect-ratio: 9/16; object-fit: cover; border-radius: 8px; border: 8px solid white; box-shadow: var(--layer-2); display: block; transition: var(--transition-snap); }
+        .hero-image:hover { transform: scale(1.02) rotate(1deg); box-shadow: var(--layer-3); }
+        .image-frame { position: absolute; top: -20px; right: -20px; width: 100%; height: 100%; border: 4px solid var(--terracotta); border-radius: 8px; pointer-events: none; z-index: -1; transform: rotate(2deg); }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 3rem; margin-top: 3rem; }
+        .project-card { background: white; border-radius: 12px; padding: 2rem; box-shadow: var(--layer-1); transition: var(--transition-snap); position: relative; overflow: hidden; border: 1px solid rgba(29, 45, 80, 0.1); }
+        .project-card:hover { transform: translateY(-10px); box-shadow: var(--layer-3); }
+        .project-card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: var(--terracotta); transform: translateY(-100%); transition: var(--transition-snap); }
+        .project-card:hover::before { transform: translateY(0); }
+        .project-image-wrapper { width: 100%; height: 200px; margin-bottom: 1.5rem; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 8px var(--shadow); }
+        .project-image-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition-snap); }
+        .project-card:hover .project-image-wrapper img { transform: scale(1.05); }
+        .project-image-wrapper::before { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 10px; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 L10,2 L20,1 L30,3 L40,2 L50,4 L60,3 L70,5 L80,4 L90,6 L100,5 L100,10 L0,10 Z' fill='white'/%3E%3C/svg%3E"); background-size: 100% 100%; }
+        .project-title { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 600; color: var(--indigo); margin-bottom: 1rem; }
+        .project-desc { font-size: 1rem; margin-bottom: 1.5rem; color: var(--ink); }
+        .project-tech { font-family: var(--font-mono); font-size: 0.85rem; color: var(--terracotta); margin-bottom: 1.5rem; letter-spacing: 0.05em; }
+        .btn { display: inline-block; padding: 0.75rem 1.5rem; background: var(--terracotta); color: white; font-family: var(--font-sans); font-weight: 600; text-decoration: none; border-radius: 6px; border: none; cursor: pointer; transition: var(--transition-snap); position: relative; overflow: hidden; box-shadow: var(--layer-1); }
+        .btn:hover { background: var(--indigo); transform: translateY(-2px); box-shadow: var(--layer-2); }
+        .btn::after { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: 0.5s; }
+        .btn:hover::after { left: 100%; }
+        .skills-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
+        .skill-panel { background: var(--parchment); border: 1px solid var(--ink); border-radius: 12px; padding: 2rem; box-shadow: var(--layer-1); transition: var(--transition-snap); position: relative; }
+        .skill-panel:hover { transform: translateY(-5px); box-shadow: var(--layer-2); }
+        .skill-title { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; color: var(--indigo); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--gold); }
+        .skill-list { list-style: none; }
+        .skill-item { padding: 0.5rem 0; position: relative; padding-left: 1.5rem; font-size: 1rem; }
+        .skill-item::before { content: "•"; position: absolute; left: 0; color: var(--terracotta); font-size: 1.2em; top: -1px; }
+        .nav-bookmarks { position: fixed; left: 2vw; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1.5rem; z-index: 1000; }
+        .nav-tab { writing-mode: vertical-rl; text-orientation: mixed; background: var(--terracotta); color: white; padding: 1rem 0.5rem; font-family: var(--font-sans); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.1em; border-radius: 0 8px 8px 0; cursor: pointer; transition: var(--transition-snap); box-shadow: 3px 0 10px rgba(226, 114, 91, 0.3); width: 40px; text-align: center; }
+        .nav-tab.active, .nav-tab:hover { background: var(--indigo); transform: translateX(5px); box-shadow: 5px 0 15px rgba(29, 45, 80, 0.3); }
+        .contact-form { max-width: 600px; margin: 0 auto; background: white; padding: 3rem; border-radius: 16px; box-shadow: var(--layer-2); border: 1px solid var(--ink); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-family: var(--font-serif); font-size: 1.1rem; font-weight: 500; color: var(--indigo); margin-bottom: 0.5rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--sand); border-radius: 8px; font-family: var(--font-sans); font-size: 1rem; transition: var(--transition-snap); }
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--terracotta); box-shadow: 0 0 0 3px rgba(226, 114, 91, 0.2); }
+        .form-textarea { min-height: 150px; resize: vertical; }
+        .library-stamp { text-align: center; padding: 4rem 2rem; background: var(--indigo); color: var(--sand); margin-top: 4rem; }
+        .stamp-text { font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 1rem; }
+        .social-links { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
+        .social-link { color: var(--gold); font-size: 1.5rem; transition: var(--transition-snap); }
+        .social-link:hover { color: white; transform: translateY(-3px); }
+        .achievements-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; align-items: start; }
+        .book-container { perspective: 1000px; display: flex; align-items: center; justify-content: center; min-height: 280px; }
+        .book { width: 200px; height: 280px; position: relative; transform-style: preserve-3d; transition: transform 1s; cursor: pointer; }
+        .book:hover { transform: translateX(10px) rotateY(-20deg) scale(1.05); }
+        .book.open { transform: translateX(50%) rotateY(-180deg); }
+        .book-cover, .book-page { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 4px; }
+        .book-cover { background: var(--indigo); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; text-align: center; z-index: 2; transform-origin: left; transition: transform 1s; box-shadow: var(--layer-2); }
+        .book.open .book-cover { transform: rotateY(-180deg); }
+        .book-page { background: var(--parchment); padding: 1.5rem; transform: rotateY(0deg); border: 1px solid var(--sand); box-shadow: var(--layer-2); }
+        @media (max-width: 768px) { #hero { grid-template-columns: 1fr; text-align: center; gap: 3rem; padding: 6rem 5vw; } .hero-tagline { margin-left: auto; margin-right: auto; padding-left: 0; } .hero-tagline::before { left: 50%; transform: translateX(-50%) translateY(-50%); } .nav-bookmarks { flex-direction: row; top: auto; bottom: 2vh; left: 50%; transform: translateX(-50%); gap: 1rem; } .nav-tab { writing-mode: horizontal-tb; text-orientation: unset; border-radius: 8px; width: auto; padding: 0.5rem 1rem; } }
+        @media (max-width: 480px) { .library-section { padding: 6rem 5vw; } .hero-name { font-size: 3rem; } .section-title { font-size: 2.5rem; } }
     </style>
 </head>
 <body>
-    <div id="desktop">
-        <header id="taskbar"><div class="taskbar-brand">CherifOS</div><div id="taskbar-apps"></div><div id="clock"></div></header>
-        <div id="icon-grid"></div>
+    <nav class="nav-bookmarks">
+        <div class="nav-tab active" data-target="#hero">Home</div>
+        <div class="nav-tab" data-target="#projects">Works</div>
+        <div class="nav-tab" data-target="#skills">Skills</div>
+        <div class="nav-tab" data-target="#experience">Experience</div>
+        <div class="nav-tab" data-target="#achievements">Achievements</div>
+        <div class="nav-tab" data-target="#contact">Contact</div>
+    </nav>
 
-        <!-- Window Templates -->
-        <div id="about-window" class="window" style="width: 600px; height: 450px; top: 100px; left: 150px;">
-            <div class="window-header"><span class="window-title">About_Me.txt</span><div class="window-controls"><span class="control-btn close-btn"></span><span class="control-btn minimize-btn"></span><span class="control-btn maximize-btn"></span></div></div>
-            <div class="window-content flex flex-col items-center text-center"></div>
+    <section id="hero" class="library-section">
+        <div class="hero-text">
+            <h1 class="hero-name">Cherif Tas</h1>
+            <p class="hero-tagline">AI Architect & Philosopher<br>Building intelligent systems from Algeria to the global stage</p>
+            <a href="#projects" class="btn">Explore My Creations</a>
         </div>
-        <div id="skills-window" class="window" style="width: 700px; height: 550px; top: 180px; left: 250px;">
-            <div class="window-header"><span class="window-title">/Skills</span><div class="window-controls"><span class="control-btn close-btn"></span><span class="control-btn minimize-btn"></span><span class="control-btn maximize-btn"></span></div></div>
-            <div class="window-content space-y-6"></div>
+        <div class="hero-image-container">
+            <img src="https://v3.fal.media/files/tiger/tDZLgN1AEWiwK4Dj05-T4_f05e86f1c78745a68c7c88de1232850c.png" alt="Cherif Tas in Suit" class="hero-image">
+            <div class="image-frame"></div>
         </div>
-        <div id="projects-window" class="window" style="width: 800px; height: 600px; top: 120px; left: 350px;">
-            <div class="window-header"><span class="window-title">/Projects</span><div class="window-controls"><span class="control-btn close-btn"></span><span class="control-btn minimize-btn"></span><span class="control-btn maximize-btn"></span></div></div>
-            <div class="window-content"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projects-grid"></div></div>
-        </div>
-        <div id="experience-window" class="window" style="width: 650px; height: 500px; top: 150px; left: 400px;">
-            <div class="window-header"><span class="window-title">/Experience</span><div class="window-controls"><span class="control-btn close-btn"></span><span class="control-btn minimize-btn"></span><span class="control-btn maximize-btn"></span></div></div>
-            <div class="window-content space-y-6" id="experience-content"></div>
-        </div>
-        <div id="achievements-window" class="window" style="width: 750px; height: 650px; top: 80px; left: 200px;">
-            <div class="window-header"><span class="window-title">/Achievements</span><div class="window-controls"><span class="control-btn close-btn"></span><span class="control-btn minimize-btn"></span><span class="control-btn maximize-btn"></span></div></div>
-            <div class="window-content space-y-8" id="achievements-content"></div>
-        </div>
-        <div id="contact-window" class="window" style="width: 400px; height: 300px; top: 250px; left: 450px;">
-            <div class="window-header"><span class="window-title">Contact.sh</span><div class="window-controls"><span class="control-btn close-btn"></span><span class="control-btn minimize-btn"></span><span class="control-btn maximize-btn"></span></div></div>
-            <div class="window-content flex flex-col justify-center items-center space-y-4" id="contact-content"></div>
-        </div>
-        <div id="terminal-window" class="window" style="width: 700px; height: 450px; top: 200px; left: 300px;">
-            <div class="window-header"><span class="window-title">/bin/bash</span><div class="window-controls"><span class="control-btn close-btn"></span><span class="control-btn minimize-btn"></span><span class="control-btn maximize-btn"></span></div></div>
-            <div id="terminal-content" class="window-content">
-                <div id="terminal-output"></div>
-                <div class="flex mt-2">
-                    <span class="text-cyan-400">cherif@os:~$</span>
-                    <input type="text" id="terminal-input" class="flex-grow bg-transparent border-none outline-none pl-2">
-                </div>
-            </div>
-        </div>
-    </div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const desktop = document.getElementById('desktop');
-    const taskbarAppsContainer = document.getElementById('taskbar-apps');
-    let zIndexCounter = 10;
+    </section>
 
-    const portfolioData = { // All data is here...
-        user: { name: "Cherif Tas", title: "AI Technology Analyst & Implementation Specialist", professionalSummary: "Multidisciplinary student passionate about building intelligent systems. My journey started with ethical hacking and evolved into UI design, web development, and applied AI. I specialize in AI tool analysis, prompt engineering, and creating solutions like chatbots and data scrapers. I merge technical skills with philosophical analysis to approach problems from unique angles.", avatar: "https://v3.fal.media/files/tiger/tDZLgN1AEWiwK4Dj05-T4_f05e86f1c78745a68c7c88de1232850c.png" },
-        contact: { email: "cheriftas20042004@gmail.com", linkedin: "https://www.linkedin.com/in/cherif-tas-7504b8319" },
-        skills: {
-            languages: [ { name: "HTML5/CSS3", level: 8 }, { name: "TypeScript", level: 7 }, { name: "Python", level: 6 }, { name: "JavaScript", level: 5 }, { name: "SQL", level: 5 } ],
-            frameworks: ["React.js", "Node.js", "Express.js", "TensorFlow", "Flask", "Pandas", "NumPy"],
-            aiTools: ["Gemini API", "Gradio", "Hugging Face", "ChatGPT", "Claude"],
-            other: ["UI/UX Design", "Responsive Design", "Cybersecurity", "Project Management", "Technical Writing", "Public Speaking", "Video Editing", "Graphic Design"]
-        },
-        projects: [
-            { title: "ENSTPStudy Platform", desc: "Centralized platform for ENSTP students with complete resources.", link: "https://prlt.vercel.app/" },
-            { title: "Algeria Intel Agent", desc: "Tool that hunts verified Algerian companies, providing clean, exportable data.", link: "https://inteldz.vercel.app" },
-            { title: "AI Tutor Chatbot", desc: "AI-powered chatbot offering a personalized, interactive way to learn about AI.", link: "https://lnkd.in/eRMps-Yk" },
-        ],
-        experience: [
-            { role: "AI Technology Analyst & Implementation Specialist", company: "Freelance", period: "2023 - Present", desc: "Analyze and compare AI tools to identify optimal applications and develop custom AI solutions." },
-            { role: "UI Developer", company: "LTP Club", period: "2023 - Present", desc: "Design and develop websites and digital assets for club events and initiatives." },
-        ],
-        achievements: {
-            competitions: [ { name: "National AI Competition", place: "4th Place", year: 2023, img: "https://media.licdn.com/dms/image/v2/D5622AQEkPvTU3w7aYQ/feedshare-shrink_800/B56ZY_zP.tH0Ag-/0/1744827548137?e=1759968000&v=beta&t=YQ6SO87ToiBID26se8usxzmADP3w8ehldHzFEjXrNWg" } ],
-            publications: [ { title: "بين ضفاف الوعي والجنون", type: "Philosophical Storybook", year: 2025, link: "https://drive.google.com/file/d/1U-2bEFVpx-bzWCj9aMqjzn-TPxRqQOGP/view?usp=drivesdk" } ],
-            certifications: ["Certified Project Management Associate", "Certified Critical Infrastructure Protection Specialist", "Machine Learning and Artificial Intelligence (HP)"]
-        }
-    };
+    <section id="projects" class="library-section">
+        <h2 class="section-title">Selected Works</h2>
+        <p class="section-subtitle">Each project is a chapter in my journey — blending technical precision with philosophical inquiry.</p>
+        <div class="projects-grid"></div>
+    </section>
 
-    // --- Clock ---
-    const clockElement = document.getElementById('clock');
-    function updateClock() {
-        const now = new Date();
-        const options = { timeZone: 'Africa/Algiers', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        clockElement.textContent = now.toLocaleTimeString('en-US', options);
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+    <section id="skills" class="library-section">
+        <h2 class="section-title">Craft & Competence</h2>
+        <p class="section-subtitle">Tools and philosophies I wield to build meaningful technology.</p>
+        <div class="skills-container"></div>
+    </section>
 
-    // --- Content Population ---
-    function populateContent() {
-        const createTag = (text) => `<span class="bg-gray-700/60 text-cyan-300 text-xs font-mono font-medium px-2 py-1 rounded">${text}</span>`;
-        // About
-        document.querySelector('#about-window .window-content').innerHTML = `<img src="${portfolioData.user.avatar}" class="h-32 w-32 object-cover rounded-full mb-4 border-2 border-cyan-400 p-1" alt="${portfolioData.user.name}"><h2 class="text-2xl font-bold text-cyan-300">${portfolioData.user.name}</h2><p class="text-md text-gray-300 mb-4">${portfolioData.user.title}</p><p class="text-gray-400 text-sm leading-relaxed">${portfolioData.user.professionalSummary}</p>`;
-        // Skills
-        document.querySelector('#skills-window .window-content').innerHTML = `<div><h3 class="font-bold text-cyan-300 mb-2">// Programming Languages</h3><div class="space-y-3">${portfolioData.skills.languages.map(s => `<div class="w-full"><span class="text-sm font-mono text-gray-300">${s.name}</span><div class="w-full bg-gray-700/50 rounded-full h-2 mt-1"><div class="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full" style="width: ${s.level * 10}%"></div></div></div>`).join('')}</div></div><div><h3 class="font-bold text-cyan-300 mb-2">// Frameworks & Libraries</h3><div class="flex flex-wrap gap-2">${portfolioData.skills.frameworks.map(createTag).join('')}</div></div><div><h3 class="font-bold text-cyan-300 mb-2">// AI Tools & Platforms</h3><div class="flex flex-wrap gap-2">${portfolioData.skills.aiTools.map(createTag).join('')}</div></div><div><h3 class="font-bold text-cyan-300 mb-2">// Other Expertise</h3><div class="flex flex-wrap gap-2">${portfolioData.skills.other.map(createTag).join('')}</div></div>`;
-        // Projects
-        document.getElementById('projects-grid').innerHTML = portfolioData.projects.map(p => `<a href="${p.link}" target="_blank" class="block bg-gray-800/50 p-4 rounded-lg hover:bg-gray-700/70 transition-colors border border-transparent hover:border-cyan-400/50"><h4 class="font-bold text-white">${p.title}</h4><p class="text-sm text-gray-400 mt-1">${p.desc}</p></a>`).join('');
-        // Experience
-        document.getElementById('experience-content').innerHTML = portfolioData.experience.map(e => `<div class="border-l-2 border-cyan-400/50 pl-4 mb-6"><p class="text-sm text-gray-400">${e.period}</p><h4 class="font-bold text-lg text-white">${e.role}</h4><p class="text-sm font-mono text-cyan-300 mb-2">${e.company}</p><p class="text-gray-400 text-sm">${e.desc}</p></div>`).join('');
-        // Achievements
-        document.getElementById('achievements-content').innerHTML = `<div><h3 class="font-bold text-cyan-300 mb-4 text-xl">// Competitions & Publications</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${portfolioData.achievements.competitions.map(c => `<div class="bg-gray-800/50 p-3 rounded-lg text-center"><img src="${c.img}" class="w-full h-32 object-cover rounded-md mb-2"><h5 class="font-bold">${c.name}</h5><p class="text-sm text-cyan-300">${c.place || c.project}</p></div>`).join('')}${portfolioData.achievements.publications.map(p => `<div class="bg-gray-800/50 p-3 rounded-lg flex flex-col justify-center text-center"><h5 class="font-bold">${p.title}</h5><p class="text-sm text-cyan-300">${p.type}</p><a href="${p.link}" target="_blank" class="text-sm mt-4 bg-cyan-600/50 hover:bg-cyan-600/80 py-1 px-2 rounded">Read More</a></div>`).join('')}</div></div><div><h3 class="font-bold text-cyan-300 mb-2 text-xl">// Certifications</h3><div class="flex flex-wrap gap-2">${portfolioData.achievements.certifications.map(c => createTag(c)).join('')}</div></div>`;
-        // Contact
-        document.getElementById('contact-content').innerHTML = `<a href="mailto:${portfolioData.contact.email}" class="bg-cyan-600/50 hover:bg-cyan-600/80 text-white font-bold py-3 px-6 rounded-lg w-full text-center transition-colors">Email Me</a><a href="${portfolioData.contact.linkedin}" target="_blank" class="bg-blue-600/50 hover:bg-blue-600/80 text-white font-bold py-3 px-6 rounded-lg w-full text-center transition-colors">LinkedIn Profile</a>`;
-    }
+    <section id="experience" class="library-section">
+         <h2 class="section-title">Professional Journey</h2>
+         <p class="section-subtitle">A timeline of roles and responsibilities where I've applied my skills.</p>
+         <div class="experience-timeline"></div>
+    </section>
 
-    // --- Desktop Icons ---
-    const icons = [
-        { id: 'about', name: 'About Me', svg: '<svg class="text-cyan-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>' },
-        { id: 'skills', name: 'Skills', svg: '<svg class="text-green-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' },
-        { id: 'projects', name: 'Projects', svg: '<svg class="text-yellow-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>' },
-        { id: 'experience', name: 'Experience', svg: '<svg class="text-orange-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' },
-        { id: 'achievements', name: 'Achievements', svg: '<svg class="text-red-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V2L8 6l4 4V2z"/><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M12 22l4-4-4-4v8z"/></svg>' },
-        { id: 'terminal', name: 'Terminal', svg: '<svg class="text-lime-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>' },
-        { id: 'contact', name: 'Contact', svg: '<svg class="text-purple-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' },
-    ];
+    <section id="achievements" class="library-section">
+        <h2 class="section-title">Accolades & Publications</h2>
+        <p class="section-subtitle">Recognition for my work in technology and my contributions to philosophical discourse.</p>
+        <div class="achievements-container"></div>
+    </section>
 
-    const iconGrid = document.getElementById('icon-grid');
-    icons.forEach(icon => {
-        const iconEl = document.createElement('div');
-        iconEl.className = 'desktop-icon';
-        iconEl.dataset.windowId = `${icon.id}-window`;
-        iconEl.innerHTML = `${icon.svg}<span>${icon.name}</span>`;
-        iconGrid.appendChild(iconEl);
-        iconEl.addEventListener('dblclick', () => openWindow(document.getElementById(iconEl.dataset.windowId)));
-    });
+    <section id="contact" class="library-section">
+        <h2 class="section-title">Let's Correspond</h2>
+        <p class="section-subtitle">I'm always open to discussing new projects, collaborations, or philosophical inquiries.</p>
+        <!--
+            NOTE TO THE USER: To make this contact form work, please do the following:
+            1. Go to https://formspree.io/ and create a new form.
+            2. Replace the placeholder "YOUR_FORM_ID" in the 'action' URL below with your actual form ID.
+            3. That's it! The form will then send submissions directly to your email.
+        -->
+        <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+            <div class="form-group"><label class="form-label" for="name">Name</label><input type="text" id="name" name="name" class="form-input" placeholder="Your name" required></div>
+            <div class="form-group"><label class="form-label" for="email">Email</label><input type="email" id="email" name="email" class="form-input" placeholder="your.email@example.com" required></div>
+            <div class="form-group"><label class="form-label" for="message">Message</label><textarea id="message" name="message" class="form-textarea" placeholder="Tell me about your project or idea..." required></textarea></div>
+            <button type="submit" class="btn">Send Message</button>
+        </form>
+        <div style="text-align: center; margin-top: 3rem;"><p>Or reach out directly: <strong><a href="mailto:cheriftas20042004@gmail.com" style="color: var(--terracotta);">cheriftas20042004@gmail.com</a></strong></p></div>
+    </section>
 
-    // --- Window Management ---
-    function openWindow(win) {
-        if (!win) return;
-        if (!win.classList.contains('open')) {
-            win.classList.remove('minimized');
-            win.classList.add('open');
-        }
-        win.style.zIndex = ++zIndexCounter;
-        createTaskbarIcon(win);
-    }
+    <footer class="library-stamp">
+        <p class="stamp-text">Cherif Tas — AI Architect & Philosopher</p>
+        <div class="social-links"><a href="https://www.linkedin.com/in/cherif-tas-7504b8319" target="_blank" class="social-link"><i class="fab fa-linkedin"></i></a></div>
+    </footer>
 
-    function createTaskbarIcon(win) {
-        const winId = win.id;
-        if (document.querySelector(`.taskbar-app[data-window-id="${winId}"]`)) return;
-        const appIcon = document.createElement('button');
-        appIcon.className = 'taskbar-app';
-        appIcon.dataset.windowId = winId;
-        appIcon.textContent = win.querySelector('.window-title').textContent;
-        appIcon.addEventListener('click', () => {
-            if (win.classList.contains('minimized')) {
-                openWindow(win);
-                appIcon.classList.remove('minimized');
-            } else {
-                win.style.zIndex = ++zIndexCounter;
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const portfolioData = {
+                projects: [
+                    { title: "ENSTPStudy Platform", desc: "Centralized academic hub for ENSTP students — organized by semester, subject, and difficulty.", tech: "React • Node.js • MongoDB", link: "https://prlt.vercel.app/", img: "https://media.licdn.com/dms/image/v2/D5622AQGs21cigIvW-w/feedshare-shrink_2048_1536/B56ZiQJl4GHMAs-/0/1754765102934?e=1759968000&v=beta&t=ydsigQiyp24HbTAuVi1nksvapmXljRi9g_kdWTBghBY" },
+                    { title: "Algeria Intel Agent", desc: "Hunts verified Algerian companies by industry & wilaya. Open-source, self-host friendly, exports clean data.", tech: "Python • Web Scraping • DataViz", link: "https://inteldz.vercel.app", img: "https://media.licdn.com/dms/image/v2/D5622AQG19sPlcAFiag/feedshare-shrink_2048_1536/B56Zhs.3MdHkAo-/0/1754175079590?e=1759968000&v=beta&t=jsGYiN-F-ydiSKaPxcr_dx0c2P6NgRZ8OQ7Er4ieZVI" },
+                    { title: "AI Tutor Chatbot", desc: "Personalized, interactive AI tutor for learning Artificial Intelligence concepts. Powered by Gemini API & Gradio.", tech: "Gradio • Gemini API • NLP", link: "https://lnkd.in/eRMps-Yk", img: "https://media.licdn.com/dms/image/v2/D5622AQEkPvTU3w7aYQ/feedshare-shrink_800/B56ZY_zP.tH0Ag-/0/1744827548137?e=1759968000&v=beta&t=YQ6SO87ToiBID26se8usxzmADP3w8ehldHzFEjXrNWg" },
+                ],
+                skills: {
+                    "Technical Expertise": ["Generative AI & Prompt Engineering", "Web Development (React, TypeScript)", "Data Engineering & Web Scraping", "UI/UX Design & Frontend Architecture", "Cybersecurity & Reverse Engineering"],
+                    "Core Strengths": ["Technical Writing & Documentation", "Public Speaking & Workshops", "Philosophical Analysis", "Project Management (Agile)", "Problem Solving & Critical Thinking"],
+                    "Creative Expression": ["Video Editing (Premiere Pro, CapCut)", "Graphic Design (Illustrator)", "Arabic Philosophical Writing", "Open Source Contribution", "Community Building & Leadership"]
+                },
+                experience: [
+                    { role: "AI Technology Analyst & Specialist", company: "Freelance", period: "2023 - Present", desc: "Analyze and compare AI tools (ChatGPT, Claude, etc.) to identify optimal applications for specific business scenarios. Provide consulting on AI integration and develop custom AI solutions." },
+                    { role: "UI Developer", company: "LTP Club", period: "2023 - Present", desc: "Design and develop websites and digital assets for club events and initiatives. Create responsive user interfaces optimized for various devices and platforms." },
+                ],
+                achievements: {
+                    competitions: [
+                        { name: "National Artificial Intelligence Competition", place: "4th Place", year: 2023, img: "https://media.licdn.com/dms/image/v2/D5622AQEkPvTU3w7aYQ/feedshare-shrink_800/B56ZY_zP.tH0Ag-/0/1744827548137?e=1759968000&v=beta&t=YQ6SO87ToiBID26se8usxzmADP3w8ehldHzFEjXrNWg" },
+                        { name: "ENSTP Innovation Bootcamp", project: "CIVTP Software", year: 2025, img: "https://media.licdn.com/dms/image/v2/D5622AQHfyj4McAgCoQ/feedshare-shrink_2048_1536/B56ZabP68JHAAo-/0/1746361414655?e=1759968000&v=beta&t=_Urmm5wGUvWtPhtlL-HyyqEBFE7ErBziBxN2Zwkn0VE" }
+                    ],
+                    publications: [ { title: "بين ضفاف الوعي والجنون", type: "Philosophical Storybook", year: 2025, link: "https://drive.google.com/file/d/1U-2bEFVpx-bzWCj9aMqjzn-TPxRqQOGP/view?usp=drivesdk" } ],
+                    certifications: ["Certified Project Management Associate", "Certified Critical Infrastructure Protection Specialist", "Machine Learning and Artificial Intelligence (HP)", "Probability & Statistics for ML (DeepLearning.AI)"]
+                }
+            };
+            function populateAll() {
+                document.querySelector('.projects-grid').innerHTML = portfolioData.projects.map(p => `<div class="project-card"><div class="project-image-wrapper"><img src="${p.img}" alt="${p.title}"></div><h3 class="project-title">${p.title}</h3><p class="project-desc">${p.desc}</p><div class="project-tech">${p.tech}</div><a href="${p.link}" target="_blank" class="btn">View</a></div>`).join('');
+                document.querySelector('.skills-container').innerHTML = Object.entries(portfolioData.skills).map(([title, skills]) => `<div class="skill-panel"><h3 class="skill-title">${title}</h3><ul class="skill-list">${skills.map(s => `<li class="skill-item">${s}</li>`).join('')}</ul></div>`).join('');
+                document.querySelector('.experience-timeline').innerHTML = portfolioData.experience.map(e => `<div class="timeline-entry" style="border-left: 2px solid var(--terracotta); padding-left: 1.5rem; margin-bottom: 2rem;"><h3 style="font-size: 1.4rem; color: var(--indigo);">${e.role}</h3><p style="font-family: var(--font-mono); color: var(--terracotta); margin-bottom: 0.5rem;">${e.company} • ${e.period}</p><p style="font-size: 0.95rem;">${e.desc}</p></div>`).join('');
+                document.querySelector('.achievements-container').innerHTML = `<h3 class="skill-title">Competitions & Publication</h3><div class="achievements-grid">${portfolioData.achievements.competitions.map(c => `<div class="project-card" style="padding: 1rem;"><div class="project-image-wrapper" style="height: 150px;"><img src="${c.img}" alt="${c.name}"></div><h4 style="font-size: 1.2rem; margin-top: 1rem;">${c.name}</h4><p class="project-tech">${c.place} - ${c.year}</p></div>`).join('')}<div class="book-container"><div class="book" id="interactive-book"><div class="book-cover"><h4 class="arabic" style="font-size: 1.5rem; color: var(--parchment);">${portfolioData.achievements.publications[0].title}</h4><p style="font-family: var(--font-serif); color: var(--sand); margin-top: 2rem;">By Cherif Tas</p><span style="position: absolute; bottom: 20px; font-size: 0.8rem; color: var(--sand);">(Click to Open)</span></div><div class="book-page"><h5 class="arabic" style="font-size: 1.2rem; color: var(--indigo); margin-bottom: 1rem;">${portfolioData.achievements.publications[0].title}</h5><p style="font-size: 0.9rem;">A self-published philosophical storybook.</p><a href="${portfolioData.achievements.publications[0].link}" target="_blank" class="btn" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;">Read Excerpt</a></div></div></div></div><h3 class="skill-title" style="margin-top: 3rem;">Certifications</h3><div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">${portfolioData.achievements.certifications.map(c => `<span style="background: var(--sand); padding: 0.3rem 0.8rem; border-radius: 6px; font-family: var(--font-mono); font-size: 0.9rem; border: 1px solid var(--terracotta); color: var(--terracotta);">${c}</span>`).join('')}</div>`;
+            }
+            populateAll();
+            document.getElementById('interactive-book').addEventListener('click', function() { this.classList.toggle('open'); });
+            const sections = document.querySelectorAll('.library-section');
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { navTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.target === '#' + entry.target.id)); } }); }, { rootMargin: "-50% 0px -50% 0px" });
+            sections.forEach(section => observer.observe(section));
+            navTabs.forEach(tab => { tab.addEventListener('click', (e) => { e.preventDefault(); document.querySelector(tab.dataset.target).scrollIntoView({ behavior: 'smooth' }); }); });
+            const form = document.querySelector('.contact-form');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    fetch(form.action, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' }})
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Thank you for your message! I will respond soon.');
+                                form.reset();
+                            } else {
+                                alert('Oops! There was a problem submitting your form.');
+                            }
+                        }).catch(() => alert('Oops! There was a problem submitting your form.'));
+                });
             }
         });
-        taskbarAppsContainer.appendChild(appIcon);
-    }
-
-    const windows = document.querySelectorAll('.window');
-    windows.forEach(win => {
-        const header = win.querySelector('.window-header');
-        const closeBtn = win.querySelector('.close-btn');
-        const minimizeBtn = win.querySelector('.minimize-btn');
-        const maximizeBtn = win.querySelector('.maximize-btn');
-
-        function onDrag({ movementX, movementY }) { if (win.dataset.isMaximized !== 'true') { let style = window.getComputedStyle(win); win.style.top = `${parseInt(style.top) + movementY}px`; win.style.left = `${parseInt(style.left) + movementX}px`; } }
-        header.addEventListener('mousedown', () => { win.style.zIndex = ++zIndexCounter; header.addEventListener('mousemove', onDrag); });
-        document.addEventListener('mouseup', () => { header.removeEventListener('mousemove', onDrag); });
-        win.addEventListener('mousedown', () => { win.style.zIndex = ++zIndexCounter; });
-
-        closeBtn.addEventListener('click', (e) => { e.stopPropagation(); win.classList.remove('open'); const taskbarIcon = document.querySelector(`.taskbar-app[data-window-id="${win.id}"]`); if (taskbarIcon) taskbarIcon.remove(); });
-        minimizeBtn.addEventListener('click', (e) => { e.stopPropagation(); win.classList.add('minimized'); win.classList.remove('open'); const taskbarIcon = document.querySelector(`.taskbar-app[data-window-id="${win.id}"]`); if (taskbarIcon) taskbarIcon.classList.add('minimized'); });
-
-        maximizeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            win.style.transition = 'width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease';
-            if (win.dataset.isMaximized === 'true') {
-                win.style.width = win.dataset.oldWidth; win.style.height = win.dataset.oldHeight; win.style.top = win.dataset.oldTop; win.style.left = win.dataset.oldLeft; win.dataset.isMaximized = 'false';
-            } else {
-                win.dataset.oldWidth = win.style.width; win.dataset.oldHeight = win.style.height; win.dataset.oldTop = win.style.top; win.dataset.oldLeft = win.style.left;
-                win.style.width = '100vw'; win.style.height = 'calc(100vh - 40px)'; win.style.top = '40px'; win.style.left = '0'; win.dataset.isMaximized = 'true';
-            }
-            setTimeout(() => { win.style.transition = 'opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease'; }, 300);
-        });
-    });
-
-    // --- Terminal ---
-    const terminalWindow = document.getElementById('terminal-window');
-    const terminalOutput = document.getElementById('terminal-output');
-    const terminalInput = document.getElementById('terminal-input');
-    let commandHistory = [];
-    let historyIndex = -1;
-
-    terminalWindow.addEventListener('click', () => terminalInput.focus());
-    terminalInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const command = terminalInput.value.trim();
-            if (command) {
-                commandHistory.push(command);
-                historyIndex = commandHistory.length;
-                processCommand(command);
-                terminalInput.value = '';
-            }
-        } else if (e.key === 'ArrowUp') {
-            if (historyIndex > 0) {
-                historyIndex--;
-                terminalInput.value = commandHistory[historyIndex];
-            }
-        } else if (e.key === 'ArrowDown') {
-            if (historyIndex < commandHistory.length - 1) {
-                historyIndex++;
-                terminalInput.value = commandHistory[historyIndex];
-            } else {
-                historyIndex = commandHistory.length;
-                terminalInput.value = '';
-            }
-        }
-    });
-
-    function printToTerminal(text, isPrompt = false) {
-        const p = document.createElement('p');
-        if (isPrompt) {
-            p.innerHTML = `<span class="prompt">cherif@os:~$</span> ${text}`;
-        } else {
-            p.textContent = text;
-        }
-        terminalOutput.appendChild(p);
-        terminalOutput.parentElement.scrollTop = terminalOutput.parentElement.scrollHeight;
-    }
-
-    function processCommand(command) {
-        printToTerminal(command, true);
-        const [cmd, ...args] = command.split(' ');
-        switch (cmd) {
-            case 'help':
-                printToTerminal('Available commands: help, ls, cat, open, neofetch, clear');
-                break;
-            case 'ls':
-                printToTerminal('about.txt  skills/  projects/  experience/  achievements/  contact.sh');
-                break;
-            case 'cat':
-                if (args[0] === 'about.txt') printToTerminal(portfolioData.user.professionalSummary);
-                else printToTerminal(`cat: ${args[0]}: No such file or directory`);
-                break;
-            case 'open':
-                const winId = `${args[0]}-window`;
-                const winToOpen = document.getElementById(winId);
-                if (winToOpen) openWindow(winToOpen);
-                else printToTerminal(`open: could not open application '${args[0]}'`);
-                break;
-            case 'neofetch':
-                printToTerminal(`
-    _______  __   __  ______    _______  ______   _______  _______
-   |       ||  | |  ||    _ |  |       ||      | |   _   ||       |
-   |    ___||  |_|  ||   | ||  |    ___||  _    ||  |_|  ||    ___|
-   |   |___ |       ||   |_||_ |   |___ | | |   ||       ||   |___
-   |    ___||       ||    __  ||    ___|| |_|   ||       ||    ___|
-   |   |    |   _   ||   |  | ||   |___ |       ||   _   ||   |___
-   |___|    |__| |__||___|  |_||_______||______| |__| |__||_______|
-   ---------------------------------------------------------------
-   OS: CherifOS v1.0
-   Host: Web Browser
-   Kernel: JavaScript
-   Uptime: ${Math.floor(performance.now()/1000)}s
-   Shell: /bin/bash
-   Resolution: ${window.innerWidth}x${window.innerHeight}
-   CPU: (1) Your Brain
-   GPU: Browser Rendering Engine
-   Memory: A few MBs of RAM
-                `);
-                break;
-            case 'clear':
-                terminalOutput.innerHTML = '';
-                break;
-            default:
-                printToTerminal(`command not found: ${cmd}`);
-        }
-    }
-
-    // --- Init ---
-    populateContent();
-    printToTerminal("Welcome to CherifOS. Type 'help' to see available commands.");
-    setTimeout(() => openWindow(document.getElementById('about-window')), 500);
-});
-</script>
+    </script>
 </body>
 </html>
