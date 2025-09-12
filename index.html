@@ -79,19 +79,28 @@
         .book-cover { background: var(--indigo); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; text-align: center; z-index: 2; transform-origin: left; transition: transform 1s; box-shadow: var(--layer-2); }
         .book.open .book-cover { transform: rotateY(-180deg); }
         .book-page { background: var(--parchment); padding: 1.5rem; transform: rotateY(0deg); border: 1px solid var(--sand); box-shadow: var(--layer-2); }
-        @media (max-width: 768px) { #hero { grid-template-columns: 1fr; text-align: center; gap: 3rem; padding: 6rem 5vw; } .hero-tagline { margin-left: auto; margin-right: auto; padding-left: 0; } .hero-tagline::before { left: 50%; transform: translateX(-50%) translateY(-50%); } .nav-bookmarks { flex-direction: row; top: auto; bottom: 2vh; left: 50%; transform: translateX(-50%); gap: 1rem; } .nav-tab { writing-mode: horizontal-tb; text-orientation: unset; border-radius: 8px; width: auto; padding: 0.5rem 1rem; } }
-        @media (max-width: 480px) { .library-section { padding: 6rem 5vw; } .hero-name { font-size: 3rem; } .section-title { font-size: 2.5rem; } }
+        @media (max-width: 768px) {
+            #hero { grid-template-columns: 1fr; text-align: center; gap: 2rem; padding: 4rem 5vw 2rem; }
+            .hero-text { order: 2; }
+            .hero-image-container { order: 1; transform: none; filter: none; }
+            .image-frame { display: none; }
+            .hero-tagline { margin-left: auto; margin-right: auto; padding-left: 0; }
+            .hero-tagline::before { left: 50%; transform: translateX(-50%) translateY(-50%); }
+            .nav-bookmarks { position: relative; flex-direction: row; gap: 0.5rem; width: 90vw; justify-content: center; margin: 2rem auto 0; }
+            .nav-tab { writing-mode: horizontal-tb; text-orientation: unset; border-radius: 8px; width: auto; padding: 0.5rem 1rem; background: var(--terracotta); color: white; }
+        }
+        @media (max-width: 480px) {
+            .library-section { padding: 4rem 5vw; }
+            #hero { padding-bottom: 2rem; }
+            .hero-name { font-size: 2.5rem; }
+            .hero-tagline { font-size: 1.1rem; max-width: 90%; }
+            .hero-image { max-width: 250px; }
+            .section-title { font-size: 2rem; }
+            .nav-tab { font-size: 0.7rem; padding: 0.4rem 0.8rem; letter-spacing: 0.05em; }
+        }
     </style>
 </head>
 <body>
-    <nav class="nav-bookmarks">
-        <div class="nav-tab active" data-target="#hero">Home</div>
-        <div class="nav-tab" data-target="#projects">Works</div>
-        <div class="nav-tab" data-target="#skills">Skills</div>
-        <div class="nav-tab" data-target="#experience">Experience</div>
-        <div class="nav-tab" data-target="#achievements">Achievements</div>
-        <div class="nav-tab" data-target="#contact">Contact</div>
-    </nav>
 
     <section id="hero" class="library-section">
         <div class="hero-text">
@@ -146,6 +155,15 @@
         </form>
         <div style="text-align: center; margin-top: 3rem;"><p>Or reach out directly: <strong><a href="mailto:cheriftas20042004@gmail.com" style="color: var(--terracotta);">cheriftas20042004@gmail.com</a></strong></p></div>
     </section>
+
+    <nav class="nav-bookmarks">
+        <div class="nav-tab active" data-target="#hero">Home</div>
+        <div class="nav-tab" data-target="#projects">Works</div>
+        <div class="nav-tab" data-target="#skills">Skills</div>
+        <div class="nav-tab" data-target="#experience">Experience</div>
+        <div class="nav-tab" data-target="#achievements">Achievements</div>
+        <div class="nav-tab" data-target="#contact">Contact</div>
+    </nav>
 
     <footer class="library-stamp">
         <p class="stamp-text">Cherif Tas — ai and web dev enthusiast and amateur writer</p>
